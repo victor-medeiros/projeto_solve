@@ -6,6 +6,8 @@ exports.up = knex => knex.schema.createTable('user', table => {
     table.string('picture').notNullable();
     table.boolean('professional').defaultTo(false)
     table.string('profile_description');
+    table.string('latitude');
+    table.string('longitude');
 })
 
 exports.down = knex => knex.schema.dropTable('user');

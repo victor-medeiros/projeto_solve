@@ -16,7 +16,9 @@ exports.seed = function(knex) {
           password: 'andre123',
           picture: 'picture',
           professional: true,
-          profile_description: 'Trabalho na área desde 2010, tenho experiência com desktops e notebooks.'
+          profile_description: 'Trabalho na área desde 2010, tenho experiência com desktops e notebooks.',
+          latitude: -23.689835,
+          longitude: -46.588463
         }
       ]);
     });
