@@ -18,5 +18,15 @@ module.exports = {
         } catch (error) {
             next(error);
         }
+    },
+    async confirm(req, res, next) {
+        try {
+            const { id } = req.body;
+
+            await knex('service').where({id}).update({status: 'Aguardando equipamento'});
+            res.send();
+        } catch (error) {
+            next(error);
+        }
     }
 }

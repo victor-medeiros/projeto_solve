@@ -9,5 +9,6 @@ routes.post('/user', UserController.create);
 routes.put('/user/:id', UserController.update);
 
 routes.post('/service/:client_id', ServiceController.create);
+routes.post('/service-confirm/', ServiceController.confirm);
 
 module.exports = routes;
