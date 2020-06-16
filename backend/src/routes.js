@@ -12,5 +12,7 @@ routes.post('/service/:client_id', ServiceController.create);
 routes.put('/service-confirm/', ServiceController.confirm);
 routes.put('/service-start/', ServiceController.start);
 routes.put('/service-hire/', ServiceController.hire);
+routes.put('/service-finish/', ServiceController.finish);
+routes.put('/service-pick-up-device/', ServiceController.pickUpDevice);
 
 module.exports = routes;

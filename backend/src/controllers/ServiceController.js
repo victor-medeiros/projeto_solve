@@ -65,5 +65,36 @@ module.exports = {
         } catch (error) {
             next(error);
         }
+    },
+    async finish(req, res, next) {
+        try {
+            const { id, solution } = req.body;
+
+            await knex('service')
+                .where({id})
+                .update({
+                    solution,
+                    status: 'Concluído, retire seu equipamento'
+                });
+
+            return res.send();
+        } catch (error) {
+            next(error);
+        }
+    },
+    async pickUpDevice(req, res, next) {
+        try {
+            const { id } = req.body;
+
+            await knex('service')
+                .where({id})
+                .update({
+                    status: 'Finalizado'
+                });
+            
+            return res.send();
+        } catch (error) {
+            next(error);
+        }
     }
 }
