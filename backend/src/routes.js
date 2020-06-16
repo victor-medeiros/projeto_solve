@@ -9,10 +9,11 @@ routes.post('/user', UserController.create);
 routes.put('/user/:id', UserController.update);
 
 routes.post('/service/:client_id', ServiceController.create);
-routes.put('/service-confirm/', ServiceController.confirm);
-routes.put('/service-start/', ServiceController.start);
-routes.put('/service-hire/', ServiceController.hire);
-routes.put('/service-finish/', ServiceController.finish);
-routes.put('/service-pick-up-device/', ServiceController.pickUpDevice);
+routes.put('/service-confirm/:id', ServiceController.confirm);
+routes.put('/service-start/:id', ServiceController.start);
+routes.put('/service-hire/:id', ServiceController.hire);
+routes.put('/service-finish/:id', ServiceController.finish);
+routes.put('/service-pick-up-device/:id', ServiceController.pickUpDevice);
+routes.delete('/service/:id', ServiceController.delete);
 
 module.exports = routes;

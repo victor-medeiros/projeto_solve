@@ -1,4 +1,5 @@
 const knex = require("../database");
+const { where } = require("../database");
 
 module.exports = {
     async create(req, res, next) {
@@ -26,10 +27,13 @@ module.exports = {
     },
     async confirm(req, res, next) {
         try {
-            const { id } = req.body;
+            const { id } = req.params;
 
             await knex('service').
-                where({id})
+                where({
+                    id,
+                    status: 'Solicitado'
+                })
                 .update({
                     status: 'Confirmado'
                 });
@@ -41,9 +45,14 @@ module.exports = {
     },
     async start(req, res, next) {
         try {
-            const { price, id } = req.body;
+            const { price } = req.body;
+            const { id } = req.params;
+
             await knex('service')
-                .where({id})
+                .where({
+                    id,
+                    status: 'Confirmado'
+                })
                 .update({price});
 
             return res.send();
@@ -53,10 +62,13 @@ module.exports = {
     },
     async hire(req, res, next) {
         try {
-            const { id } = req.body;
+            const { id } = req.params;
 
             await knex('service')
-                .where({id})
+                .where({
+                    id,
+                    status: 'Confirmado'
+                })
                 .update({
                     status: 'Em andamento'
                 });
@@ -68,13 +80,19 @@ module.exports = {
     },
     async finish(req, res, next) {
         try {
-            const { id, solution } = req.body;
+            const { solution } = req.body;
+            const { id } = req.params;
+            const dateTime = new Date;
 
             await knex('service')
-                .where({id})
+                .where({
+                    id,
+                    status: 'Em andamento',
+                })
                 .update({
                     solution,
-                    status: 'Concluído, retire seu equipamento'
+                    status: 'Concluído, retire seu equipamento',
+                    dateTime
                 });
 
             return res.send();
@@ -84,14 +102,34 @@ module.exports = {
     },
     async pickUpDevice(req, res, next) {
         try {
-            const { id } = req.body;
+            const { id } = req.params;
 
             await knex('service')
-                .where({id})
+                .where({
+                    id,
+                    status: 'Concluído, retire seu equipamento'
+                })
                 .update({
                     status: 'Finalizado'
                 });
             
+            return res.send();
+        } catch (error) {
+            next(error);
+        }
+    },
+    async delete(req, res, next) {
+        try {
+            const { id } = req.params;
+
+            const invalidColumns = ['Solicitado', 'Confirmado'];
+
+            await knex('service')
+                .whereIn('status', invalidColumns)
+                .andWhere({id})
+                .del()
+                
+
             return res.send();
         } catch (error) {
             next(error);
