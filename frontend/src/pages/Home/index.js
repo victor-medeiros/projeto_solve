@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HomeComponent from './Components/HomeComponent/';
 import AccountComponent from './Components/AccountComponent/';
 import ServicesComponent from './Components/ServicesComponent/';
 import { FiHome, FiServer, FiUser, FiLogOut } from 'react-icons/fi';
 import Usuario1 from '../../assets/usuario1.png';
 import './style.css';
+import api from '../../service/api';
 
 const Home = (props) => {
     const id = props.match.params.id;
