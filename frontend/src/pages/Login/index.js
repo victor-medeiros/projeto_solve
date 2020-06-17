@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 
 import './style.css';
 
@@ -25,8 +25,8 @@ const Login = () => {
                         <input type="checkbox" name="lembrar_senha" id="lembrar_senha" />
                         <label for="lembrar_senha">Lembrar minha senha</label>
                     </div>
-                    <a className="form-link" href="./cadastro.html">Esqueci minha senha</a>
-                    <span>Ainda não possui conta? <a className="form-link" href="./cadastro.html">Crie agora!</a></span>
+                    <Link className="form-link" to="./cadastro.html">Esqueci minha senha</Link>
+                    <span>Ainda não possui conta? <Link className="form-link" to="/register">Crie agora!</Link></span>
                 </div>
             </form>
         </div>
