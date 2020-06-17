@@ -11,7 +11,7 @@ const Home = (props) => {
 
     const [page, setPage] = useState('home');
     return (
-        <div className="container">
+        <div className="hcontainer">
             <div className="side-menu">
                 <div className="side-menu-header">
                     <img src={Usuario1} alt="usuario"/>
@@ -32,8 +32,8 @@ const Home = (props) => {
                         <p>Minha conta</p>
                     </li>
                     <li>
-                        <FiLogOut size={20} color='#000' />
-                        <p>Sair</p>
+                        <FiLogOut size={20} color='#d71919' />
+                        <p className="log-out">Sair</p>
                     </li>
                 </u>
             </div>

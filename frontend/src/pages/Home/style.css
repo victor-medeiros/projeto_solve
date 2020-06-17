@@ -11,14 +11,17 @@ body, * {
     --background-form: #efefef;
     --background-side-menu: #fff;
     --text-color: #999999;
+    --amarelo: #FFD335;
+    --vermelho: #d71919;
 }
 
-.container {
+.hcontainer {
     display: flex;
     flex-direction: row;
-    /* height: 100vh; */
     width: 100%;
     overflow: hidden;
+    background-color: var(--background-form);
+    min-height: 100vh;
 }
 
 .side-menu {
@@ -61,6 +64,10 @@ body, * {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.log-out {
+    color: var(--vermelho);
 }
 
 .side-menu-items li:hover {

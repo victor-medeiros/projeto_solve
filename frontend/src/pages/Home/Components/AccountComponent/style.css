@@ -1,17 +1,26 @@
+input:disabled, textarea:disabled{
+    background-color: var(--background-dashboard);
+}
+
 .account-container {
     width: 100%;
     display: flex;
     flex-direction: column;
     padding: 20px;
     margin-left: 280px;
+    overflow: auto;
 }
 
-.header {
+.account-header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     width: 80%;
+}
+
+.account-header p:hover {
+    cursor: pointer;
 }
 
 .edit {
@@ -25,9 +34,10 @@
     flex-direction: column;
 }
 
-.content img {
-    border-radius: 14px;
+.user-content img {
+    border-radius: 20px;
     width: 200px;
+    border-radius: 14px;
 }
 
 .image {
@@ -55,6 +65,7 @@
     width: 80%;
     display: flex;
     justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 .password-container div{
@@ -70,4 +81,37 @@
     border: none;
     width: 100%;
     font-size: 18px;
+}
+
+.map-section-account {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    width: 80%;
+}
+
+.map-account {
+    height: 100%;
+    width: 100%;
+    border-radius: 14px;
+}
+
+.map-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.account-profile-description {
+    border: none;
+    min-height: 50px;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-bottom: 30px;
+    width: 80%;
+    overflow: hidden;
+    resize: vertical;
+    max-height: 200px;
 }
