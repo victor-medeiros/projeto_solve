@@ -6,6 +6,25 @@ import './style.css'
 
 const HomeComponent = (props) => {
     const [userClicked, setUserClicked] = useState(false);
+    const [user, setUser] = useState({});
+
+    useEffect(() => {
+        if (localStorage.getItem('lastUserLogged') == 0) {
+            setUser({
+                id: localStorage.getItem('client_id'),
+                name: localStorage.getItem('client_name'),
+                picture: localStorage.getItem('client_picture'),
+                professional: 0
+            })
+        } else {
+            setUser({
+                id: localStorage.getItem('professional_id'),
+                name: localStorage.getItem('professional_name'),
+                picture: localStorage.getItem('professional_picture'),
+                professional: 1
+            })
+        }
+    }, [])
     
     return (
         <div className="home-container" style={{display: props.display}}>

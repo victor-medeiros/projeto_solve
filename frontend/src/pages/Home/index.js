@@ -9,6 +9,7 @@ import './style.css';
 import api from '../../service/api';
 
 const Home = (props) => {
+    const [page, setPage] = useState('home');
     const [user, setUser] = useState({});
     const client_id = props.match.params.id;
     const [request, setRequest] = useState('');
@@ -32,6 +33,7 @@ const Home = (props) => {
                 picture: localStorage.getItem('professional_picture'),
                 professional: 1
             })
+            setPage('services');
         }
     }, []);
 
@@ -53,7 +55,7 @@ const Home = (props) => {
         }
         history.push('/');
     }
-    const [page, setPage] = useState('home');
+    
     return (
         <div className="hcontainer">
             <div className="side-menu">
