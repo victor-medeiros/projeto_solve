@@ -29,11 +29,12 @@ const Login = () => {
                 <img src={logo} alt="Solve" />
                 <input 
                     className="input-element"
-                    type="text"
+                    type="email"
                     id="email"
                     placeholder="Seu e-mail"
                     onChange={e => setEmail(e.target.value)}
                     value={email}
+                    required
                 />
                 <input
                     className="input-element"
@@ -42,6 +43,7 @@ const Login = () => {
                     placeholder="Sua senha"
                     onChange={e => setPassword(e.target.value)}
                     value={password}
+                    required
                 />
                 <button type="submit" className="button-submit">Entrar</button>
                 <div className="text-container">

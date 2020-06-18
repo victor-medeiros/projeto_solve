@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import HomeComponent from './Components/HomeComponent/';
 import AccountComponent from './Components/AccountComponent/';
 import ServicesComponent from './Components/ServicesComponent/';
@@ -8,15 +9,36 @@ import './style.css';
 import api from '../../service/api';
 
 const Home = (props) => {
-    const id = props.match.params.id;
+    const [user, setUser] = useState({});
+    const client_id = props.match.params.id;
+    const [request, setRequest] = useState('');
+    const professional_id = 3;
 
+
+    const history = useHistory();
+
+    useEffect(()=> {
+        api.get(`user/${client_id}`).then(response => {
+            setUser(response.data.user)
+        });
+    }, []);
+
+    async function handleRequest(){
+        const data = [client_id, professional_id, request]
+        await api.post('/service', data);
+        
+    }
+
+    function handleLogOut(){
+        history.push('/');
+    }
     const [page, setPage] = useState('home');
     return (
         <div className="hcontainer">
             <div className="side-menu">
                 <div className="side-menu-header">
                     <img src={Usuario1} alt="usuario"/>
-                    <p>Nome</p>
+                    <p>{user.name}</p>
                 </div>
                 
                 <u className="side-menu-items">
@@ -32,13 +54,13 @@ const Home = (props) => {
                         <FiUser size={20} color='#000' />
                         <p>Minha conta</p>
                     </li>
-                    <li>
+                    <li onClick={handleLogOut}>
                         <FiLogOut size={20} color='#d71919' />
                         <p className="log-out">Sair</p>
                     </li>
                 </u>
             </div>
-            <HomeComponent display={page === 'home'? 'block': 'none'} />
+            <HomeComponent display={page === 'home' ? 'block': 'none'} />
             <AccountComponent display={page === 'account'? 'block': 'none'} />
             <ServicesComponent display={page === 'services'? 'block': 'none'} />
         </div>

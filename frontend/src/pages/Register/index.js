@@ -1,15 +1,67 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { MdAccountBox } from 'react-icons/md';
 import { FiArrowLeft } from 'react-icons/fi';
 import './style.css';
+import { Map, TileLayer, Marker } from 'react-leaflet';
+import api from '../../service/api';
 
 const Register = () => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confrimPassword, setConfirmPassword] = useState('');
+    const [profile_description, setProfileDescription] = useState('');
+    const [professional, setProfessional] = useState(false);
+    const [latitude, setLatitude] = useState(0);
+    const [longitude, setLongitude] = useState(0);
+
+    const history = useHistory();
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(position => {
+            const {latitude, longitude} = position.coords;
+            setLatitude(latitude);
+            setLongitude(longitude);
+        });
+    }, []);
+
+    async function handleSubmit(e){
+        e.preventDefault();
+        if(password !== confrimPassword){
+            return alert('As senhas não batem');
+        }
+
+        let lat = null;
+        let lon = null;
+
+        if (professional) {
+            lat = latitude;
+            lon = longitude;
+        }
+
+        const data = {
+            name,
+            email,
+            password,
+            profile_description,
+            professional,
+            latitude: lat,
+            longitude: lon
+        };
+        await api.post('/user', data);
+        alert('Cadastrado');
+        history.push('/');
+    }
+
+    function handleEmailChange(e){
+        setEmail(e.target.value)
+    }
     return (
         <div className="rcontainer">
-            <form className="register-form-container">
+            <form className="register-form-container" onSubmit={handleSubmit}>
                 <div className="rheader">
-                    <Link to="/">
+                    <Link className="link" to="/">
                         <FiArrowLeft size={24} color="#19d7c8" />
                         <p>Voltar para a home</p>
                     </Link>
@@ -20,21 +72,70 @@ const Register = () => {
                 <input type="file" id="picture" style={{display: 'none'}} />
                 <label htmlFor="picture">Upload da foto de perfil</label>
 
-                <input className="rinput-element" type="text" id="name" placeholder="Seu nome e sobrenome" />
-                <input className="rinput-element" type="text" id="email" placeholder="E-mail" />
+                <input 
+                    className="rinput-element"
+                    type="text"
+                    id="name"
+                    required
+                    placeholder="Seu nome e sobrenome"
+                    onChange={e => setName(e.target.value)}
+                    value={name}
+                />
+                <input
+                    className="rinput-element"
+                    type="email"
+                    id="email"
+                    required
+                    placeholder="E-mail"
+                    onChange={handleEmailChange}
+                    value={email}
+                />
 
                 <div className="rpassword-container">
-                    <input type="password" id="password" placeholder="Senha" />
-                    <input type="password" id="confirm-password" placeholder="Confirme sua senha" />
+                    <input 
+                        type="password"
+                        id="password"
+                        placeholder="Senha"
+                        required
+                        onChange={e => setPassword(e.target.value)}
+                        value={password}
+                    />
+                    <input
+                        type="password"
+                        id="confirm-password"
+                        placeholder="Confirme sua senha"
+                        required
+                        onChange={e => setConfirmPassword(e.target.value)}
+                        value={confrimPassword}
+                    />
                 </div>
 
                 <div className="rcheckbox">
-                    <input type="checkbox" id="professional" />
+                    <input
+                        value="true"
+                        type="checkbox"
+                        id="professional"
+                        onChange={e => setProfessional(e.target.checked)}
+                    />
                     <label htmlFor="professional">Quero trabalhar como técnico em informática na plataforma</label>
                 </div>
 
-                <label className="rtitle" htmlFor="profile-description">Favoreça sua contratação na plataforma adicionando uma descrição do seu perfil</label>
-                <textarea id="profile-description"></textarea>
+                <div style={{display: professional ? 'block' : 'none', width: '80%', marginTop: 15}}>
+                    <label className="rtitle" htmlFor="profile-description">Descrição do seu perfil, para facilitar sua contratação na plataforma</label>
+                    <textarea
+                        id="profile-description"
+                        placeholder="Ex: Estou na área desde 2010, tenho experiência com concerto de computadores e notebooks."
+                        onChange={e => setProfileDescription(e.target.value)}
+                        value={profile_description}
+                    />
+                    <Map className="rmap" center={[ latitude, longitude ]} zoom={15}>
+                        <TileLayer
+                            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <Marker position={[ latitude, longitude ]} />
+                    </Map>
+                </div>
 
                 <button className="rbutton-submit" type="submit">Cadastrar</button>
             </form>
