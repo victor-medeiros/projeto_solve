@@ -16,11 +16,23 @@ const Home = (props) => {
 
 
     const history = useHistory();
-
+    
     useEffect(()=> {
-        api.get(`user/${client_id}`).then(response => {
-            setUser(response.data.user)
-        });
+        if (localStorage.getItem('lastUserLogged') == 0) {
+            setUser({
+                id: localStorage.getItem('client_id'),
+                name: localStorage.getItem('client_name'),
+                picture: localStorage.getItem('client_picture'),
+                professional: 0
+            })
+        } else {
+            setUser({
+                id: localStorage.getItem('professional_id'),
+                name: localStorage.getItem('professional_name'),
+                picture: localStorage.getItem('professional_picture'),
+                professional: 1
+            })
+        }
     }, []);
 
     async function handleRequest(){
@@ -30,6 +42,15 @@ const Home = (props) => {
     }
 
     function handleLogOut(){
+        if (user.professional == 0) {
+            localStorage.setItem('client_id', '');
+            localStorage.setItem('client_name', '');
+            localStorage.setItem('client_picture', '');
+        } else {
+            localStorage.setItem('professional_id', '');
+            localStorage.setItem('professional_name', '');
+            localStorage.setItem('professional_picture', '');
+        }
         history.push('/');
     }
     const [page, setPage] = useState('home');

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdGrade } from 'react-icons/md';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import Tecnico1 from '../../../../assets/tecnico1.png';

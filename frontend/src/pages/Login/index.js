@@ -20,6 +20,19 @@ const Login = () => {
         if(user === undefined) {
             return alert('Usuario inexistente');
         }
+
+        if(user.professional){
+            localStorage.setItem('professional_id', user.id);
+            localStorage.setItem('professional_name', user.name);
+            localStorage.setItem('professional_picture', user.picture);
+        } else {
+            localStorage.setItem('client_id', user.id);
+            localStorage.setItem('client_picture', user.picture);
+            localStorage.setItem('client_name', user.name);
+        };
+
+        localStorage.setItem('lastUserLogged', user.professional)
+
         return history.push(`home/${user.id}`);
     }
 
