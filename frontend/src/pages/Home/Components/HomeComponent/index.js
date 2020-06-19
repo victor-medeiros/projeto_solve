@@ -8,30 +8,31 @@ import './style.css';
 import api from '../../../../service/api';
 
 const HomeComponent = (props) => {
+    const [request, setRequest] = useState('');
     const [userClicked, setUserClicked] = useState(false);
-    const [user, setUser] = useState({});
+    const [professional, setProfessional] = useState({});
     const [location, setLocation] = useState([]);
     const [users, setUsers] = useState([]);
-    
+
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
-            const {latitude, longitude} = position.coords;
+            const { latitude, longitude } = position.coords;
             setLocation([latitude, longitude]);
         })
     }, []);
 
     useEffect(() => {
-        api.get('/users').then(response => 
+        api.get('/users').then(response =>
             setUsers(response.data.map(user => {
                 return {
                     ...user,
                     markerIcon: new L.Icon({
-                        iconUrl: user.image_url,
+                        iconUrl: user.picture_url,
                         iconSize: [40, 40]
                     })
                 };
             })
-        ));
+            ));
     }, []);
 
 
@@ -51,33 +52,53 @@ const HomeComponent = (props) => {
         iconSize: [40, 40]
     });
 
-    function handleMarkerClick(picture){
+    function handleMarkerClick(user) {
         setUserClicked(true);
-        setUser({ picture })
+        setProfessional(user)
     }
-    
-    return (
-        <div className="home-container" style={{display: props.display}}>
-        <label className="title" htmlFor="request">Descreva o serviço que precisa ser realizado</label>
-        <textarea type="text" id="request" placeholder="Ex: Notebook acende o led, mas não inicia ao apertar o botão." />
 
-        <p className="title">Confirme sua localização no mapa para ver os profissionais</p>
-        <div className="map-section">
-            <div className="map-container">
-                <Map className="map" center={[ -23.6353983, -46.5836981 ]} zoom={15}>
-                    <TileLayer
-                        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    {users.map(user => (
-                        <Marker
-                            key={user.id}
-                            position={[ user.latitude, user.longitude ]}
-                            onclick={() => handleMarkerClick(user.image_url)}
-                            icon={user.markerIcon}
+    function handleRequestService() {
+        if (request === '') {
+            return alert('Digite o serviço');
+        }
+
+        const clietn_id = localStorage.getItem('client_id');
+        const professional_id = professional.id;
+
+        localStorage.setItem('request', request);
+        localStorage.setItem('service-client-id', clietn_id);
+        localStorage.setItem('service-professional-id', professional_id);
+        return alert('Seriço solicitado!');
+    }
+
+    return (
+        <div className="home-container" style={{ display: props.display }}>
+            <label className="title" htmlFor="request">Descreva o serviço que precisa ser realizado</label>
+            <textarea
+                type="text"
+                id="request"
+                placeholder="Ex: Notebook acende o led, mas não inicia ao apertar o botão."
+                onChange={e => setRequest(e.target.value)}
+                value={request}
+            />
+
+            <p className="title">Confirme sua localização no mapa para ver os profissionais</p>
+            <div className="map-section">
+                <div className="map-container">
+                    <Map className="map" center={[-23.6353983, -46.5836981]} zoom={15}>
+                        <TileLayer
+                            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
-                    ))}
-                    {/* <Marker 
+                        {users.map(user => (
+                            <Marker
+                                key={user.id}
+                                position={[user.latitude, user.longitude]}
+                                onClick={() => handleMarkerClick(user)}
+                                icon={user.markerIcon}
+                            />
+                        ))}
+                        {/* <Marker 
                         position={[ -23.632076, -46.583004 ]}
                         onclick={() => handleMarkerClick(Tecnico1)}
                         icon={myIcon}
@@ -87,33 +108,33 @@ const HomeComponent = (props) => {
                         onclick={() => handleMarkerClick(Tecnico2)}
                         icon={myIcon2}
                     /> */}
-                    <Marker position={[-23.6353983,-46.58442]} />
-                </Map>
-                <button className="button-confirm">Confirmar</button>
-            </div>
-            <div 
-                className="professional-container" 
-                style={{
-                display: userClicked ? 'flex' : 'none'
-                }}
-            >
-                <img src={user.picture} alt="tecnico"/>
-                <div className="professional-content">
-                    <div className="name">
-                        <p className='professional-title'>José</p>
-                        <div className="average">
-                            <p>4.7</p>
-                            <MdGrade size={20} color='#999999' />
+                        <Marker position={[-23.6353983, -46.58442]} />
+                    </Map>
+                    <button className="button-confirm">Confirmar</button>
+                </div>
+                <div
+                    className="professional-container"
+                    style={{
+                        display: userClicked ? 'flex' : 'none'
+                    }}
+                >
+                    <img src={professional.picture_url} alt="tecnico" />
+                    <div className="professional-content">
+                        <div className="name">
+                            <p className='professional-title'>{professional.name}</p>
+                            <div className="average">
+                                <p>4.7</p>
+                                <MdGrade size={20} color='#999999' />
+                            </div>
                         </div>
+                        <p className="professional-description">123 serviços realizados</p>
+                        <p className="professional-title">Descrição</p>
+                        <p className="professional-description" style={{ overflow: 'auto', maxHeight: 50 }}>{professional.profile_description}</p>
+                        <button className="button-solicitar" onClick={handleRequestService}>Solicitar</button>
                     </div>
-                    <p className="professional-description">123 serviços realizados</p>
-                    <p className="professional-title">Descrição</p>
-                    <p className="professional-description" style={{overflow: 'auto', maxHeight: 50}}>Sou técnico em informática desde 2010, com experiência em computadores e notebooks</p>
-                    <button className="button-solicitar">Solicitar</button>
                 </div>
             </div>
         </div>
-    </div>  
     );
 }
 
