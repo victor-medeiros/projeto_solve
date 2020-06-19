@@ -60,6 +60,13 @@ body, * {
     margin-top: 15px;
 }
 
+.profile-image {
+    height: 100px;
+    width: 100px;
+    border-radius: 14px;
+    background-position: center;
+}
+
 .rinput-element {
     height: 50px;
     width: 80%;

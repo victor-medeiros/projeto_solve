@@ -1,30 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { MdGrade } from 'react-icons/md';
 import { Map, TileLayer, Marker } from 'react-leaflet';
+import L from 'leaflet';
 import Tecnico1 from '../../../../assets/tecnico1.png';
+import Usuario1 from '../../../../assets/usuario1.png';
 import './style.css'
 
 const HomeComponent = (props) => {
     const [userClicked, setUserClicked] = useState(false);
     const [user, setUser] = useState({});
-
+    const [location, setLocation] = useState([]);
+    
     useEffect(() => {
-        if (localStorage.getItem('lastUserLogged') == 0) {
-            setUser({
-                id: localStorage.getItem('client_id'),
-                name: localStorage.getItem('client_name'),
-                picture: localStorage.getItem('client_picture'),
-                professional: 0
-            })
-        } else {
-            setUser({
-                id: localStorage.getItem('professional_id'),
-                name: localStorage.getItem('professional_name'),
-                picture: localStorage.getItem('professional_picture'),
-                professional: 1
-            })
-        }
-    }, [])
+        navigator.geolocation.getCurrentPosition(position => {
+            const {latitude, longitude} = position.coords;
+            setLocation([latitude, longitude]);
+        })
+    }, []);
+
+    // user.map()
+
+    const myIcon = new L.Icon({
+        iconUrl: Tecnico1,
+        iconSize: [40, 40]
+    });
+    const myIcon2 = new L.Icon({
+        iconUrl: Usuario1,
+        iconSize: [40, 40]
+    });
+
+    function handleMarkerClick(picture){
+        setUserClicked(true);
+        setUser({ picture })
+    }
     
     return (
         <div className="home-container" style={{display: props.display}}>
@@ -40,9 +48,16 @@ const HomeComponent = (props) => {
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                     <Marker 
-                        position={[ -23.6353983, -46.5836981 ]}
-                        onclick={() => setUserClicked(true)}
+                        position={[ -23.632076, -46.583004 ]}
+                        onclick={() => handleMarkerClick(Tecnico1)}
+                        icon={myIcon}
                     />
+                    <Marker 
+                        position={[ -23.636912, -46.584428 ]}
+                        onclick={() => handleMarkerClick(Usuario1)}
+                        icon={myIcon2}
+                    />
+                    <Marker position={[-23.6353983,-46.58442]} />
                 </Map>
                 <button className="button-confirm">Confirmar</button>
             </div>
@@ -52,7 +67,7 @@ const HomeComponent = (props) => {
                 display: userClicked ? 'flex' : 'none'
                 }}
             >
-                <img src={Tecnico1} alt="tecnico"/>
+                <img src={user.picture} alt="tecnico"/>
                 <div className="professional-content">
                     <div className="name">
                         <p className='professional-title'>José</p>

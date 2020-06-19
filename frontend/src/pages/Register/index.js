@@ -11,10 +11,12 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confrimPassword, setConfirmPassword] = useState('');
+    const [picture, setPicture] = useState();
     const [profile_description, setProfileDescription] = useState('');
     const [professional, setProfessional] = useState(false);
     const [latitude, setLatitude] = useState(0);
     const [longitude, setLongitude] = useState(0);
+    const [selectedImgUrl, setSelectedImgUrl] = useState('');
 
     const history = useHistory();
 
@@ -35,23 +37,37 @@ const Register = () => {
         let lat = null;
         let lon = null;
 
+        const proStatus = professional ? 1 : 0;
+
         if (professional) {
             lat = latitude;
             lon = longitude;
         }
 
-        const data = {
-            name,
-            email,
-            password,
-            profile_description,
-            professional,
-            latitude: lat,
-            longitude: lon
-        };
+        const data = new FormData();
+
+        data.append('name', name);
+        data.append('email', email);
+        data.append('password', password);
+        data.append('picture', picture);
+        data.append('profile_description', profile_description);
+        data.append('professional', proStatus);
+        data.append('latitude', lat);
+        data.append('longitude', lon);
+
+        // if (picture) {
+        // }
         await api.post('/user', data);
         alert('Cadastrado');
         history.push('/');
+    }
+
+    function handlePictureChange(file) {
+        const image = file;
+        setPicture(image);
+
+        const imgUrl = URL.createObjectURL(image);
+        setSelectedImgUrl(imgUrl);
     }
 
     function handleEmailChange(e){
@@ -67,9 +83,12 @@ const Register = () => {
                     </Link>
                 </div>
                 <label htmlFor="picture">
-                    <MdAccountBox size={100} color="#5D6F70" />
+                    {picture 
+                        ? <img src={selectedImgUrl} alt="image" className="profile-image" />
+                        : <MdAccountBox size={100} color="#5D6F70" />
+                    }
                 </label>
-                <input type="file" id="picture" style={{display: 'none'}} />
+                <input onChange={e => handlePictureChange(e.target.files[0])} accept='image/*' type="file" id="picture" style={{display: 'none'}} />
                 <label htmlFor="picture">Upload da foto de perfil</label>
 
                 <input 
