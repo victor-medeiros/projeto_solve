@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { MdGrade } from 'react-icons/md';
 import { Map, TileLayer, Marker } from 'react-leaflet';
-import L from 'leaflet';
+import L, { icon } from 'leaflet';
 import Tecnico1 from '../../../../assets/tecnico1.png';
-import Usuario1 from '../../../../assets/usuario1.png';
-import './style.css'
+import Tecnico2 from '../../../../assets/tecnico2.png';
+import './style.css';
+import api from '../../../../service/api';
 
 const HomeComponent = (props) => {
     const [userClicked, setUserClicked] = useState(false);
     const [user, setUser] = useState({});
     const [location, setLocation] = useState([]);
+    const [users, setUsers] = useState([]);
     
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
@@ -18,14 +20,34 @@ const HomeComponent = (props) => {
         })
     }, []);
 
-    // user.map()
+    useEffect(() => {
+        api.get('/users').then(response => 
+            setUsers(response.data.map(user => {
+                return {
+                    ...user,
+                    markerIcon: new L.Icon({
+                        iconUrl: user.image_url,
+                        iconSize: [40, 40]
+                    })
+                };
+            })
+        ));
+    }, []);
+
+
+    function createMarkerIcon(url) {
+        const icon = new L.Icon({
+            iconUrl: url,
+            iconSize: [40, 40]
+        });
+    }
 
     const myIcon = new L.Icon({
         iconUrl: Tecnico1,
         iconSize: [40, 40]
     });
     const myIcon2 = new L.Icon({
-        iconUrl: Usuario1,
+        iconUrl: Tecnico2,
         iconSize: [40, 40]
     });
 
@@ -47,16 +69,24 @@ const HomeComponent = (props) => {
                         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-                    <Marker 
+                    {users.map(user => (
+                        <Marker
+                            key={user.id}
+                            position={[ user.latitude, user.longitude ]}
+                            onclick={() => handleMarkerClick(user.image_url)}
+                            icon={user.markerIcon}
+                        />
+                    ))}
+                    {/* <Marker 
                         position={[ -23.632076, -46.583004 ]}
                         onclick={() => handleMarkerClick(Tecnico1)}
                         icon={myIcon}
                     />
                     <Marker 
                         position={[ -23.636912, -46.584428 ]}
-                        onclick={() => handleMarkerClick(Usuario1)}
+                        onclick={() => handleMarkerClick(Tecnico2)}
                         icon={myIcon2}
-                    />
+                    /> */}
                     <Marker position={[-23.6353983,-46.58442]} />
                 </Map>
                 <button className="button-confirm">Confirmar</button>
