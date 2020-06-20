@@ -19,33 +19,39 @@ const Home = (props) => {
     const history = useHistory();
     
     useEffect(()=> {
-        if (localStorage.getItem('lastUserLogged') == 0) {
-            setUser({
-                id: localStorage.getItem('client_id'),
-                name: localStorage.getItem('client_name'),
-                picture: localStorage.getItem('client_picture'),
-                professional: 0
-            })
-        } else {
-            setUser({
-                id: localStorage.getItem('professional_id'),
-                name: localStorage.getItem('professional_name'),
-                picture: localStorage.getItem('professional_picture'),
-                professional: 1
-            })
-        }
+        // if (localStorage.getItem('lastUserLogged') == 0) {
+        //     setUser({
+        //         id: localStorage.getItem('client_id'),
+        //         name: localStorage.getItem('client_name'),
+        //         picture: localStorage.getItem('client_picture'),
+        //         professional: 0
+        //     })
+        // } else {
+        //     setUser({
+        //         id: localStorage.getItem('professional_id'),
+        //         name: localStorage.getItem('professional_name'),
+        //         picture: localStorage.getItem('professional_picture'),
+        //         professional: 1
+        //     })
+        // }
+        setUser({
+            id: localStorage.getItem('user_id'),
+            name: localStorage.getItem('user_name'),
+            picture: localStorage.getItem('user_picture')
+        })
     }, []);
 
     function handleLogOut(){
-        if (user.professional == 0) {
-            localStorage.setItem('client_id', '');
-            localStorage.setItem('client_name', '');
-            localStorage.setItem('client_picture', '');
-        } else {
-            localStorage.setItem('professional_id', '');
-            localStorage.setItem('professional_name', '');
-            localStorage.setItem('professional_picture', '');
-        }
+        // if (user.professional == 0) {
+        //     localStorage.setItem('client_id', '');
+        //     localStorage.setItem('client_name', '');
+        //     localStorage.setItem('client_picture', '');
+        // } else {
+        //     localStorage.setItem('professional_id', '');
+        //     localStorage.setItem('professional_name', '');
+        //     localStorage.setItem('professional_picture', '');
+        // }
+        localStorage.clear();
         history.push('/');
     }
     
@@ -53,7 +59,7 @@ const Home = (props) => {
         <div className="hcontainer">
             <div className="side-menu">
                 <div className="side-menu-header">
-                    <img src={Usuario1} alt="usuario"/>
+                    <img src={user.picture} alt="usuario"/>
                     <p>{user.name}</p>
                 </div>
                 

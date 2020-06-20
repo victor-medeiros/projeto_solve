@@ -15,23 +15,28 @@ const Login = () => {
         const data = {email, password};
         const response = await api.post('/login', data);
 
-        const { user } = response.data;
+        const user = response.data.user[0];
 
         if(user === undefined) {
             return alert('Usuario inexistente');
         }
 
-        if(user.professional){
-            localStorage.setItem('professional_id', user.id);
-            localStorage.setItem('professional_name', user.name);
-            localStorage.setItem('professional_picture', user.picture);
-        } else {
-            localStorage.setItem('client_id', user.id);
-            localStorage.setItem('client_picture', user.picture);
-            localStorage.setItem('client_name', user.name);
-        };
+        // if(user.professional){
+        //     localStorage.setItem('professional_id', user.id);
+        //     localStorage.setItem('professional_name', user.name);
+        //     localStorage.setItem('professional_picture', user.picture_url);
+        // } else {
+        //     localStorage.setItem('client_id', user.id);
+        //     localStorage.setItem('client_picture', user.picture_url);
+        //     localStorage.setItem('client_name', user.name);
+        // };
 
-        localStorage.setItem('lastUserLogged', user.professional)
+        localStorage.setItem('user_id', user.id);
+        localStorage.setItem('user_picture', user.picture_url);
+        localStorage.setItem('user_name', user.name);
+        localStorage.setItem('professional', user.professional);
+
+        // localStorage.setItem('lastUserLogged', user.professional)
 
         return history.push(`home/${user.id}`);
     }
