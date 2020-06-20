@@ -33,15 +33,8 @@ const Home = (props) => {
                 picture: localStorage.getItem('professional_picture'),
                 professional: 1
             })
-            setPage('services');
         }
     }, []);
-
-    async function handleRequest(){
-        const data = [client_id, professional_id, request]
-        await api.post('/service', data);
-        
-    }
 
     function handleLogOut(){
         if (user.professional == 0) {
