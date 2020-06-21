@@ -1,14 +1,20 @@
 const express = require('express');
 const UserController = require('./controllers/UserController');
 const ServiceController = require('./controllers/ServiceController');
+const multer = require('multer');
+const multerConfig = require('./config/multer');
 
 const routes = express.Router();
 
-routes.get('/users', UserController.index);
-routes.post('/user', UserController.create);
-routes.put('/user/:id', UserController.update);
+const upload = multer(multerConfig);
 
-routes.post('/service/:client_id', ServiceController.create);
+routes.get('/users', UserController.show);
+routes.post('/user', upload.single('picture'), UserController.create);
+routes.post('/login', UserController.login);
+routes.put('/user/:id', upload.single('picture'), UserController.update);
+
+routes.post('/service', ServiceController.create);
+routes.get('/service', ServiceController.index);
 routes.put('/service-confirm/:id', ServiceController.confirm);
 routes.put('/service-start/:id', ServiceController.start);
 routes.put('/service-hire/:id', ServiceController.hire);

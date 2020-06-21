@@ -1,11 +1,19 @@
 const knex = require('../database');
+const { index } = require('./ServiceController');
 
 module.exports = {
-    async index(req, res, next) {
+    async show(req, res, next) {
         try {
             const result = await knex('user').where({ professional: true });
+
+            const users = result.map(user => {
+                return {
+                    ...user,
+                    picture_url: `http://localhost:3333/uploads/${user.picture}`
+                };
+            });
             
-            return res.json(result);
+            return res.json(users);
         } catch (error) {
             next(error);
         }
@@ -22,7 +30,7 @@ module.exports = {
                 longitude
             } = req.body;
     
-            const picture = 'picture';
+            const picture = req.file.filename;
     
             const userId = await knex('user').insert({
                 name,
@@ -37,6 +45,30 @@ module.exports = {
             res.status(201);
             return res.json({ ok: true });
         } catch (error) {
+            return next(error);
+        }
+    },
+    async login(req, res, next){
+        try {
+            const { email, password } = req.body;
+
+            const user = await knex('user')
+                .where({
+                    email,
+                    password
+                });
+            if (!user) {
+                return res.json({error: 'User not found'});
+            }
+
+            const serializedUser = user.map(data => {
+                return {
+                    ...data,
+                    picture_url: `http://localhost:3333/uploads/${data.picture}`
+                };
+            })
+            return res.json({user: serializedUser});
+        } catch (error) {
             next(error);
         }
     },
@@ -48,11 +80,12 @@ module.exports = {
                 email,
                 password,
                 professional,
-                picture,
                 profile_description,
                 latitude,
                 longitude
             } = req.body;
+
+            const picture = req.file.filename;
 
             await knex('user').where({id}).update({
                 name,

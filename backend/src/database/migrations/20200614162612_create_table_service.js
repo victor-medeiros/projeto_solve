@@ -7,6 +7,7 @@ exports.up = knex => knex.schema.createTable('service', table => {
       table.string('request');
       table.string('solution');
       table.string('status');
+      table.integer('rate');
 
       table.foreign('client_id').references('user.id');
       table.foreign('professional_id').references('user.id');

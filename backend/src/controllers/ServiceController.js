@@ -1,26 +1,68 @@
 const knex = require("../database");
 const { where } = require("../database");
+const { index } = require("./UserController");
 
 module.exports = {
     async create(req, res, next) {
         try {
-            const { client_id } = req.params;
+            const client_id = req.headers.authorization;
             const { professional_id, request } = req.body;
             const status = 'Solicitado';
 
-            await knex('service').insert({
+            const [ id ] = await knex('service').insert({
                 client_id,
                 professional_id,
                 request,
                 status
             });
 
-            res.json({
-                client_id,
-                professional_id,
-                request,
-                status
-            });
+            res.json({id});
+        } catch (error) {
+            next(error);
+        }
+    },
+    async index(req, res, next) {
+        try {
+            const user_id = req.headers.authorization;
+            let serializedUser = {};
+            
+            const client = await knex('service')
+                .whereNot({status: 'Finalizado'})
+                .andWhere({client_id: user_id});
+
+            if (client[0] !== undefined){
+                const [RowDataPacket] = await knex('user')
+                    .where({id: client[0].professional_id})
+                    .select('name', 'picture');console.log(RowDataPacket)
+                    
+                serializedUser = client.map(data => {
+                    return {
+                        ...data,
+                        user_name: RowDataPacket.name,
+                        picture_url: `http://localhost:3333/uploads/${RowDataPacket.picture}`
+                    };
+                });
+            } else {
+                const professional = await knex('service')
+                    .whereNot({status: 'Finalizado'})
+                    .andWhere({professional_id: user_id});
+
+                if (professional[0] !== undefined){
+                    const [RowDataPacket] = await knex('user')
+                        .where({id: professional[0].client_id})
+                        .select('name', 'picture');
+                    
+                    serializedUser = professional.map(data => {
+                        return {
+                            ...data,
+                            user_name: RowDataPacket.name,
+                            picture_url: `http://localhost:3333/uploads/${RowDataPacket.picture}`
+                        };
+                    });
+                }
+            }
+
+            return res.json({service: serializedUser});
         } catch (error) {
             next(error);
         }
@@ -53,7 +95,10 @@ module.exports = {
                     id,
                     status: 'Confirmado'
                 })
-                .update({price});
+                .update({
+                    price,
+                    status: 'Pronto para iniciar'
+                });
 
             return res.send();
         } catch (error) {
@@ -67,7 +112,7 @@ module.exports = {
             await knex('service')
                 .where({
                     id,
-                    status: 'Confirmado'
+                    status: 'Pronto para iniciar'
                 })
                 .update({
                     status: 'Em andamento'
@@ -91,7 +136,7 @@ module.exports = {
                 })
                 .update({
                     solution,
-                    status: 'Concluído, retire seu equipamento',
+                    status: 'Concluído',
                     dateTime
                 });
 
@@ -107,7 +152,7 @@ module.exports = {
             await knex('service')
                 .where({
                     id,
-                    status: 'Concluído, retire seu equipamento'
+                    status: 'Concluído'
                 })
                 .update({
                     status: 'Finalizado'
