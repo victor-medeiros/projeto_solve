@@ -22,7 +22,7 @@ const HomeComponent = (props) => {
     const [solution, setSolution] = useState('');
     const [startModalComponent, setStartModalComponent] = useState('none');
     const [finishModalComponent, setFinishModalComponent] = useState('none');
-    const [cancelModalComponent, setcancelModalComponent] = useState('none');
+    const [cancelModalComponent, setCancelModalComponent] = useState('none');
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
@@ -45,7 +45,7 @@ const HomeComponent = (props) => {
             }
         }).then(response => {
             const currentService = response.data.service[0];
-            if (currentService != undefined) {
+            if (currentService !== undefined) {
                 setService(response.data.service[0]);
                 setServiceInProgress(true);
             }
@@ -78,6 +78,18 @@ const HomeComponent = (props) => {
     function handleMarkerClick(user) {
         setUserClicked(true);
         setProfessional(user)
+    }
+
+    function handleShowModalStart() {
+        setStartModalComponent('flex');
+    }
+
+    function handleShowModalFinish() {
+        setFinishModalComponent('flex');console.log('Finish Service')
+    }
+
+    function handleShowModalCancel() {
+        setCancelModalComponent('flex');
     }
 
     async function handleRequestService() {
@@ -120,11 +132,6 @@ const HomeComponent = (props) => {
         await api.put(`/service-hire/${id}`);
     }
 
-    async function handleFinishService() {
-        const { id } = service;
-        await api.put(`/service-finish/${id}`, solution);
-    }
-
     async function handlePickUpDevice() {
         const { id } = service;
         await api.put(`/service-pick-up-device/${id}`);
@@ -133,8 +140,8 @@ const HomeComponent = (props) => {
     return (
         <div className="home-container" style={{ display: props.display }}>
             <StartModalComponent idService={service.id} display={startModalComponent} />
-            <StartModalComponent display={finishModalComponent} />
-            <StartModalComponent display={cancelModalComponent} />
+            <FinishModalComponent idService={service.id} display={finishModalComponent} />
+            <CancelModalComponent idService={service.id} display={cancelModalComponent} />
             {!serviceInProgress
                 ? userStatus == 0
                 ? (
@@ -200,20 +207,20 @@ const HomeComponent = (props) => {
                     <div className="service-content">
                         <div className="header">
                             <div className="user">
-                                <img src={service != undefined ? service.picture_url : ''} alt="usuario"/>
-                                <p>{service != undefined ? service.user_name : ''}</p>
+                                <img src={service !== undefined ? service.picture_url : ''} alt="usuario"/>
+                                <p>{service !== undefined ? service.user_name : ''}</p>
                             </div>
-                            <p id="status" className="begining">{service != undefined ? service.status : ''}</p>
+                            <p id="status" className="begining">{service !== undefined ? service.status : ''}</p>
                         </div>
                         <div className="content">
                             <div className="request-content">
                                 <p className="title">Descrição</p>
-                                <p className="description" id="request">{service != undefined ? service.request : ''}</p>
+                                <p className="description" id="request">{service !== undefined ? service.request : ''}</p>
                             </div>
                             
                             {/* <p style={{display: 'none'}} id="price">R$ 300.00</p> */}
                             {userStatus == 1
-                                ? service.status == 'Solicitado'
+                                ? service.status === 'Solicitado'
                                     ? (
                                         <div style={{display: 'flex', flexDirection: 'row'}}>
                                             <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
@@ -224,18 +231,18 @@ const HomeComponent = (props) => {
                                             </button>
                                         </div>
                                     )
-                                    : service.status == 'Confirmado'
+                                    : service.status === 'Confirmado'
                                         ? (
                                             <div style={{display: 'flex', flexDirection: 'row'}}>
                                                 <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
                                                     Cancelar
                                                 </button>
-                                                <button onClick={() => setStartModalComponent('flex')} className="button-pick" style={{marginLeft: 10}}>
+                                                <button onClick={handleShowModalStart} className="button-pick" style={{marginLeft: 10}}>
                                                     Iniciar
                                                 </button>
                                             </div>
                                         )
-                                        : service.status == 'Pronto para iniciar' 
+                                        : service.status === 'Pronto para iniciar' 
                                             ? (
                                                 <div style={{display: 'flex', flexDirection: 'row'}}>
                                                     <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
@@ -243,24 +250,24 @@ const HomeComponent = (props) => {
                                                     </button>
                                                 </div>
                                             )
-                                            : service.status == 'Em andamento' 
+                                            : service.status === 'Em andamento' 
                                                 ? (
                                                     <div style={{display: 'flex', flexDirection: 'row'}}>
-                                                        <button onClick={handleFinishService} className="button-pick" style={{marginLeft: 10}}>
+                                                        <button onClick={handleShowModalFinish} className="button-pick" style={{marginLeft: 10}}>
                                                             Finalizar
                                                         </button>
                                                     </div>
                                                 )
-                                                : service.status == 'Concluído'
-                                                    ? (<p>R$ {service.price.toFixed(2)}</p>)
+                                                : service.status === 'Concluído'
+                                                    ? (<p>R$ {service.price}</p>)
                                                     : (<p></p>)
-                                : service.status == 'Solicitado'
+                                : service.status === 'Solicitado'
                                     ? (
                                         <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
                                             Cancelar
                                         </button>
                                     )
-                                    : service.status == 'Pronto para iniciar'
+                                    : service.status === 'Pronto para iniciar'
                                         ? (
                                             <div style={{display: 'flex', flexDirection: 'row'}}>
                                                 <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
@@ -271,13 +278,13 @@ const HomeComponent = (props) => {
                                                 </button>
                                             </div>
                                         )
-                                        : service.status == 'Confirmado' 
+                                        : service.status === 'Confirmado' 
                                             ? (
                                                 <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
                                                     Cancelar
                                                 </button>
                                             )
-                                            : (<p>R$ {service.price.toFixed(2)}}</p>)
+                                            : (<p>R$ {service.price}</p>)
                             }
                         </div>
                     </div>

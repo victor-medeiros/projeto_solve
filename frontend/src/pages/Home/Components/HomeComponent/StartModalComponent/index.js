@@ -1,17 +1,22 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import './style.css';
 import api from '../../../../../service/api';
 
-const StartModalComponent = ({ display, serviceId }) => {
-    const [price, setPrice] = useState(0);
-    const [windowDisplay, setWindowDisplay] = useState(display);
+const StartModalComponent = ({ display, idService }) => {
+    const [price, setPrice] = useState('');
+    const [windowDisplay, setWindowDisplay] = useState('none');
+
+    useEffect(() => {
+        setWindowDisplay(display);
+    }, [display]);
 
     async function handleStartService() {
         if (isNaN(price)){
             return alert('Digite um valor numérico');
         }
-        
-        await api.put(`/service-start/${serviceId}`, price);
+
+        await api.put(`/service-start/${idService}`, {price});
+        setWindowDisplay('none');
     }
 
     async function handleCancelService() {
@@ -23,6 +28,7 @@ const StartModalComponent = ({ display, serviceId }) => {
             <div className="modal-window">
                 <label htmlFor="">Preço do serviço</label>
                 <input
+                    className="modal-input"
                     type="text"
                     placeholder="Ex: 300.00"
                     onChange={e => setPrice(e.target.value)}
