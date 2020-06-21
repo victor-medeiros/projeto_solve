@@ -4,9 +4,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
-import StartModalComponent from './pages/Home/Components/HomeComponent/StartModalComponent';
-import FinishModalComponent from './pages/Home/Components/HomeComponent/FinishModalComponent';
-import CancelModalComponent from './pages/Home/Components/HomeComponent/CancelModalComponent';
+import HireConfirmationModalComponent from './pages/Home/Components/HomeComponent/HireConfirmationModalComponent';
 
 const Routes = () => {
     return (
@@ -14,9 +12,7 @@ const Routes = () => {
             <Route path='/' exact component={Login} />
             <Route path='/register' component={Register} />
             <Route path='/home/:id' component={Home} />
-            <Route path='/modal-start' component={StartModalComponent} />
-            <Route path='/modal-finish' component={FinishModalComponent} />
-            <Route path='/modal-cancel' component={CancelModalComponent} />
+            <Route path='/modal-confirm' component={HireConfirmationModalComponent} />
         </BrowserRouter>
     );
 }

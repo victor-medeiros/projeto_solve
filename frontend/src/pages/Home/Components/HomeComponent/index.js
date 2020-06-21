@@ -8,6 +8,7 @@ import StartModalComponent from './StartModalComponent';
 import FinishModalComponent from './FinishModalComponent';
 import CancelModalComponent from './CancelModalComponent';
 import RateModalComponent from './RateModalComponent';
+import HireConfirmationModalComponent from './HireConfirmationModalComponent';
 import { FiStar } from 'react-icons/fi';
 
 
@@ -26,7 +27,7 @@ const HomeComponent = (props) => {
     const [startModalComponent, setStartModalComponent] = useState('none');
     const [finishModalComponent, setFinishModalComponent] = useState('none');
     const [cancelModalComponent, setCancelModalComponent] = useState('none');
-    const [rateModalComponent, setRateModalComponent] = useState('none');
+    const [hireModalComponent, setHireModalComponent] = useState('none');
     const [rate, setRate] = useState(0);
     const [rateModalDisplay, setRateModalDisplay] = useState('none');
     const [starsColor, setStarsColor] = useState([]);
@@ -191,13 +192,7 @@ const HomeComponent = (props) => {
     }
 
     async function handleHireService() {
-        const { id } = service;
-        await api.put(`/service-hire/${id}`);
-    }
-
-    async function handlePickUpDevice() {
-        const { id } = service;
-        await api.put(`/service-pick-up-device/${id}`);
+        setHireModalComponent('flex')
     }
 
     return (
@@ -205,7 +200,7 @@ const HomeComponent = (props) => {
             <StartModalComponent idService={service.id} display={startModalComponent} />
             <FinishModalComponent idService={service.id} display={finishModalComponent} />
             <CancelModalComponent idService={service.id} display={cancelModalComponent} />
-            <RateModalComponent idService={service.id} user={professional} display={rateModalComponent} />
+            <HireConfirmationModalComponent idService={service.id} display={hireModalComponent} />
             
             {!serviceInProgress
                 ? userStatus == 0
@@ -287,7 +282,7 @@ const HomeComponent = (props) => {
                                 ? service.status === 'Solicitado'
                                     ? (
                                         <div style={{display: 'flex', flexDirection: 'row'}}>
-                                            <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
+                                            <button className="button-cancel" onClick={handleCancelService}>
                                                 Cancelar
                                             </button>
                                             <button onClick={handleConfirmService} className="button-pick" style={{marginLeft: 10}}>
@@ -298,7 +293,7 @@ const HomeComponent = (props) => {
                                     : service.status === 'Confirmado'
                                         ? (
                                             <div style={{display: 'flex', flexDirection: 'row'}}>
-                                                <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
+                                                <button className="button-cancel" onClick={handleCancelService}>
                                                     Cancelar
                                                 </button>
                                                 <button onClick={handleShowModalStart} className="button-pick" style={{marginLeft: 10}}>
@@ -309,7 +304,7 @@ const HomeComponent = (props) => {
                                         : service.status === 'Pronto para iniciar' 
                                             ? (
                                                 <div style={{display: 'flex', flexDirection: 'row'}}>
-                                                    <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
+                                                    <button className="button-cancel" onClick={handleCancelService}>
                                                         Cancelar
                                                     </button>
                                                 </div>
@@ -327,14 +322,15 @@ const HomeComponent = (props) => {
                                                     : (<p></p>)
                                 : service.status === 'Solicitado'
                                     ? (
-                                        <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
+                                        <button className="button-cancel" onClick={handleCancelService}>
                                             Cancelar
                                         </button>
                                     )
                                     : service.status === 'Pronto para iniciar'
                                         ? (
-                                            <div style={{display: 'flex', flexDirection: 'row'}}>
-                                                <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
+                                            <div style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end'}}>
+                                                <p>R$ {service.price}</p>
+                                                <button className="button-cancel" onClick={handleCancelService} style={{marginLeft: 30}}>
                                                     Cancelar
                                                 </button>
                                                 <button onClick={handleHireService} className="button-pick" style={{marginLeft: 10}}>
@@ -344,7 +340,7 @@ const HomeComponent = (props) => {
                                         )
                                         : service.status === 'Confirmado' 
                                             ? (
-                                                <button className="button-cancel" onClick={handleCancelService} style={{display: 'block'}}>
+                                                <button className="button-cancel" onClick={handleCancelService}>
                                                     Cancelar
                                                 </button>
                                             )
