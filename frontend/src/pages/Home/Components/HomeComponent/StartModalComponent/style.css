@@ -2,7 +2,6 @@ body, * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: ;
 }
 
 .modal-container {
@@ -22,6 +21,9 @@ body, * {
     padding: 30px 40px;
     font-size: 18px;
     border-radius: 14px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
 .modal-input {
@@ -57,4 +59,16 @@ body, * {
     padding: 30px 40px;
     font-size: 18px;
     border-radius: 14px;
+}
+
+.modal-window img {
+    width: 50px;
+    
+}
+
+.rate-buttons {
+    margin-top: 15px;
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
 }

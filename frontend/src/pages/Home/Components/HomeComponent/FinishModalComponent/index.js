@@ -14,6 +14,7 @@ const FinishModalComponent = ({display, idService}) => {
 
         const data = { solution, dateTime }
         await api.put(`/service-finish/${idService}`, data);
+        setWindowDisplay('none');
     }
 
     return (

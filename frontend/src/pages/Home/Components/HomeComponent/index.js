@@ -7,6 +7,9 @@ import api from '../../../../service/api';
 import StartModalComponent from './StartModalComponent';
 import FinishModalComponent from './FinishModalComponent';
 import CancelModalComponent from './CancelModalComponent';
+import RateModalComponent from './RateModalComponent';
+import { FiStar } from 'react-icons/fi';
+
 
 
 const HomeComponent = (props) => {
@@ -23,6 +26,10 @@ const HomeComponent = (props) => {
     const [startModalComponent, setStartModalComponent] = useState('none');
     const [finishModalComponent, setFinishModalComponent] = useState('none');
     const [cancelModalComponent, setCancelModalComponent] = useState('none');
+    const [rateModalComponent, setRateModalComponent] = useState('none');
+    const [rate, setRate] = useState(0);
+    const [rateModalDisplay, setRateModalDisplay] = useState('none');
+    const [starsColor, setStarsColor] = useState([]);
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
@@ -48,12 +55,38 @@ const HomeComponent = (props) => {
             if (currentService !== undefined) {
                 setService(response.data.service[0]);
                 setServiceInProgress(true);
+                if (currentService.status === 'Concluído') {
+                    setRateModalDisplay('flex');
+                }
             }
             
         });
 
+        // setStarsColor({
+        //     star0: '#4d4d4d', 
+        //     star1: '#4d4d4d',
+        //     star2: '#4d4d4d',
+        //     star3: '#4d4d4d',
+        //     star4: '#4d4d4d'
+        // });
+        setStarsColor([
+            '#4d4d4d',
+            '#4d4d4d',
+            '#4d4d4d',
+            '#4d4d4d',
+            '#4d4d4d'
+        ]);
+
         setUserStatus(localStorage.getItem('professional'));
-        
+    }, []);
+
+    useEffect(() => {
+        console.log(service);
+
+        if (service.status === 'Concluído') {
+            const user = service.map(data => data.id);
+            console.log({id: user})
+        }
     }, []);
 
     async function handleConfirmLocation(){
@@ -77,7 +110,27 @@ const HomeComponent = (props) => {
 
     function handleMarkerClick(user) {
         setUserClicked(true);
-        setProfessional(user)
+        setProfessional(user);
+        localStorage.setItem('professional-picture', user.picture_url);
+        localStorage.setItem('professional-name', user.name);
+    }
+
+    function handleStarClicked(givenRate) {
+        const colorsArray = [];
+        for (let i = 0; i < 5; i++) {
+            if (i < givenRate){
+                colorsArray.push('#FFD335');
+                // console.log('amarelo');
+            } else {
+                // console.log('preto');
+                colorsArray.push('#4d4d4d')
+            }
+            // colors = {...starsColor, [`star${i}`]: '#FFD335'};
+        }
+        console.log(colorsArray);
+        setStarsColor(colorsArray);
+        setRate(givenRate);
+        console.log(givenRate);
     }
 
     function handleShowModalStart() {
@@ -90,6 +143,16 @@ const HomeComponent = (props) => {
 
     function handleShowModalCancel() {
         setCancelModalComponent('flex');
+    }
+    
+    // function handleShowModalRate() {
+    //     setRateModalComponent('flex');
+    // }
+
+    async function handleRateService(){
+        const { id } = service;
+        await api.put(`/service-rate/${id}`, {rate});
+        setRateModalDisplay('none');
     }
 
     async function handleRequestService() {
@@ -142,6 +205,8 @@ const HomeComponent = (props) => {
             <StartModalComponent idService={service.id} display={startModalComponent} />
             <FinishModalComponent idService={service.id} display={finishModalComponent} />
             <CancelModalComponent idService={service.id} display={cancelModalComponent} />
+            <RateModalComponent idService={service.id} user={professional} display={rateModalComponent} />
+            
             {!serviceInProgress
                 ? userStatus == 0
                 ? (
@@ -218,7 +283,6 @@ const HomeComponent = (props) => {
                                 <p className="description" id="request">{service !== undefined ? service.request : ''}</p>
                             </div>
                             
-                            {/* <p style={{display: 'none'}} id="price">R$ 300.00</p> */}
                             {userStatus == 1
                                 ? service.status === 'Solicitado'
                                     ? (
@@ -284,7 +348,28 @@ const HomeComponent = (props) => {
                                                     Cancelar
                                                 </button>
                                             )
-                                            : (<p>R$ {service.price}</p>)
+                                            : service.status === 'Concluído'
+                                                ? (
+                                                    <div className="modal-container" style={{ display: rateModalDisplay }}>
+                                                        <div className="modal-window">
+                                                            <img src={localStorage.getItem('professional-picture')} alt="Usuário"/>
+                                                            <p>Avalie o serviço de {localStorage.getItem('professional-name')}</p>
+
+                                                            <div className="rate-buttons">
+                                                                <FiStar size={24} color={starsColor[0]} onClick={() => handleStarClicked(1)} />
+                                                                <FiStar size={24} color={starsColor[1]} onClick={() => handleStarClicked(2)} />
+                                                                <FiStar size={24} color={starsColor[2]} onClick={() => handleStarClicked(3)} />
+                                                                <FiStar size={24} color={starsColor[3]} onClick={() => handleStarClicked(4)} />
+                                                                <FiStar size={24} color={starsColor[4]} onClick={() => handleStarClicked(5)} />
+                                                            </div>
+                                                            
+                                                            <button onClick={handleRateService} className="button-confirm">Confirmar</button>
+                                                            {/* <div className="modal-buttons">
+                                                            </div> */}
+                                                        </div>
+                                                    </div>
+                                                )
+                                                : (<p>R$ {service.price}</p>)
                             }
                         </div>
                     </div>
