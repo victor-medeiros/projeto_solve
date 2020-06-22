@@ -94,6 +94,10 @@
     color: var(--text-color);
 }
 
+.average p{
+    margin-top: 0;
+}
+
 .professional-title {
     font-size: 18px;
     margin-top: 20px;

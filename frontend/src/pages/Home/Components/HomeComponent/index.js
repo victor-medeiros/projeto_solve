@@ -22,12 +22,9 @@ const HomeComponent = (props) => {
     const [serviceInProgress, setServiceInProgress] = useState(false);
     const [service, setService] = useState({});
     const [userStatus, setUserStatus] = useState(0);
-    const [price, setPrice] = useState(0);
-    const [solution, setSolution] = useState('');
     const [startModalComponent, setStartModalComponent] = useState('none');
     const [finishModalComponent, setFinishModalComponent] = useState('none');
     const [cancelModalComponent, setCancelModalComponent] = useState('none');
-    const [canceledModalComponent, setCanceledModalComponent] = useState('none');
     const [hireModalComponent, setHireModalComponent] = useState('none');
     const [rate, setRate] = useState(0);
     const [rateModalDisplay, setRateModalDisplay] = useState('none');
@@ -102,6 +99,7 @@ const HomeComponent = (props) => {
                 };
             }))
         );
+            console.log('ASDASD')
     }
 
     function handleMapClick(e) {
@@ -144,10 +142,6 @@ const HomeComponent = (props) => {
 
     function handleShowModalCancel() {
         setCancelModalComponent('flex');
-    }
-    
-    function handleShowModalCanceled() {
-        setCanceledModalComponent('flex');
     }
 
     async function handleRateService(){
@@ -262,11 +256,11 @@ const HomeComponent = (props) => {
                                         <div className="name">
                                             <p className='professional-title'>{professional.name}</p>
                                             <div className="average">
-                                                <p>4.7</p>
+                                                <p>{professional.avg}</p>
                                                 <MdGrade size={20} color='#999999' />
                                             </div>
                                         </div>
-                                        <p className="professional-description">123 serviços realizados</p>
+                                        <p className="professional-description">{professional.count} serviços realizados</p>
                                         <p className="professional-title">Descrição</p>
                                         <p className="professional-description" style={{ overflow: 'auto', maxHeight: 50 }}>{professional.profile_description}</p>
                                         <button className="button-solicitar" onClick={handleRequestService}>Solicitar</button>
@@ -336,7 +330,16 @@ const HomeComponent = (props) => {
                                                 : service.status === 'Concluído'
                                                     ? (<p>R$ {service.price}</p>)
                                                     : service.status === 'Cancelado'
-                                                        ? () => handleShowModalCanceled
+                                                        ? (
+                                                            <div className="modal-container" style={{ display: canceledWindowDisplay }}>
+                                                                <div className="modal-window">
+                                                                    <p>{service.user_name} cancelou o serviço.</p>
+                                                                    <div className="modal-buttons">
+                                                                        <button onClick={handleDeleteService} className="button-confirm">Ok</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )
                                                         : (<p></p>)
                                 : service.status === 'Solicitado'
                                     ? (

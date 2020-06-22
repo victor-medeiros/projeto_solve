@@ -65,11 +65,6 @@ const Login = () => {
                 />
                 <button type="submit" className="button-submit">Entrar</button>
                 <div className="text-container">
-                    <div className="checkbox">
-                        <input type="checkbox" name="lembrar_senha" id="lembrar_senha" />
-                        <label htmlFor="lembrar_senha">Lembrar minha senha</label>
-                    </div>
-                    <Link className="form-link" to="./cadastro.html">Esqueci minha senha</Link>
                     <span>Ainda não possui conta? <Link className="form-link" to="/register">Crie agora!</Link></span>
                 </div>
             </form>
