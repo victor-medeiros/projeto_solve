@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import './style.css';
 import api from '../../../../../service/api';
 
 const StartModalComponent = ({ display, idService }) => {
     const [price, setPrice] = useState('');
     const [windowDisplay, setWindowDisplay] = useState('none');
+
+    const history = useHistory();
 
     useEffect(() => {
         setWindowDisplay(display);
@@ -17,6 +20,8 @@ const StartModalComponent = ({ display, idService }) => {
 
         await api.put(`/service-start/${idService}`, {price});
         setWindowDisplay('none');
+        const userId = localStorage.getItem('user_id')
+        return history.push(`/home/${userId}`);
     }
 
     async function handleCancelService() {

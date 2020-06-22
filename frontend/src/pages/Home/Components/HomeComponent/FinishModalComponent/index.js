@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import api from '../../../../../service/api';
 
 const FinishModalComponent = ({display, idService}) => {
     const [windowDisplay, setWindowDisplay] = useState('');
     const [solution, setSolution] = useState('');
+
+    const history = useHistory();
 
     useEffect(() => {
         setWindowDisplay(display);
@@ -15,6 +18,8 @@ const FinishModalComponent = ({display, idService}) => {
         const data = { solution, dateTime }
         await api.put(`/service-finish/${idService}`, data);
         setWindowDisplay('none');
+        const userId = localStorage.getItem('user_id')
+        return history.push(`/home/${userId}`);
     }
 
     return (

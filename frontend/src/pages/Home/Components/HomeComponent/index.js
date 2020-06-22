@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { MdGrade } from 'react-icons/md';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import L, { icon } from 'leaflet';
@@ -7,8 +8,6 @@ import api from '../../../../service/api';
 import StartModalComponent from './StartModalComponent';
 import FinishModalComponent from './FinishModalComponent';
 import CancelModalComponent from './CancelModalComponent';
-import CanceledModalComponent from './CanceledModalComponent';
-import RateModalComponent from './RateModalComponent';
 import HireConfirmationModalComponent from './HireConfirmationModalComponent';
 import { FiStar } from 'react-icons/fi';
 
@@ -35,6 +34,8 @@ const HomeComponent = (props) => {
     const [starsColor, setStarsColor] = useState([]);
     const [canceledWindowDisplay, setCanceledWindowDisplay] = useState('none');
 
+    const history = useHistory();
+
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
             const { latitude, longitude } = position.coords;
@@ -43,13 +44,8 @@ const HomeComponent = (props) => {
     }, []);
 
     useEffect(() => {
-        let userId = localStorage.getItem('user_id');
-        // if (localStorage.getItem('lastUserLogged') == 1){
-        //     userId = localStorage.getItem('professional_id');
-        // } else {
-        //     userId = localStorage.getItem('client_id');
-        // }
-
+        const userId = localStorage.getItem('user_id');
+        
         api.get('/service', {
             headers: {
                 Authorization: userId
@@ -88,8 +84,6 @@ const HomeComponent = (props) => {
     }, []);
 
     useEffect(() => {
-        console.log(service);
-
         if (service.status === 'Concluído') {
             const user = service.map(data => data.id);
             console.log({id: user})
@@ -155,14 +149,13 @@ const HomeComponent = (props) => {
     function handleShowModalCanceled() {
         setCanceledModalComponent('flex');
     }
-    // function handleShowModalRate() {
-    //     setRateModalComponent('flex');
-    // }
 
     async function handleRateService(){
         const { id } = service;
         await api.put(`/service-rate/${id}`, {rate});
         setRateModalDisplay('none');
+        const userId = localStorage.getItem('user_id')
+        return history.push(`/home/${userId}`);
     }
 
     async function handleRequestService() {
@@ -182,22 +175,28 @@ const HomeComponent = (props) => {
         });
 
         const { id } = response.data;
+        const currentService = await
 
         setServiceInProgress(true);
         setService({ id });
         setRequest('');
-
-        return alert('Seriço solicitado!');
+        alert('Seriço solicitado!');
+        const userId = localStorage.getItem('user_id')
+        return history.push(`/home/${userId}`);
     }
 
     async function handleCancelService() {
         setServiceInProgress(false);
         await api.delete(`/service/${service.id}`);
+        const userId = localStorage.getItem('user_id')
+        return history.push(`/home/${userId}`);
     }
 
     async function handleConfirmService() {
         const { id } = service;
         await api.put(`/service-confirm/${id}`);
+        const userId = localStorage.getItem('user_id')
+        return history.push(`/home/${userId}`);
     }
 
     async function handleHireService() {
@@ -208,6 +207,8 @@ const HomeComponent = (props) => {
         const { id } = service;
         await api.delete(`/service/${id}`);
         setCanceledWindowDisplay('none');
+        const userId = localStorage.getItem('user_id')
+        return history.push(`/home/${userId}`);
     }
 
     return (
