@@ -1,1 +1,1 @@
-#Projeto Solve
+#Um site de serviços voltados para técnicos em informárica e clientes que precisam de um serviço. Nele um cliente pode solicitar um serviço a um técnico, que realiza o serviço e no final recebe uma avaliação do cliente pelo seu serviço.
