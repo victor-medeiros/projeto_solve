@@ -8,18 +8,17 @@ const CancelModalComponent = ({ user, display, idService }) => {
         setWindowDisplay(display);
     }, [display]);
 
-    async function handleCancelService() {
-        await api.put(`/service-cancel/${idService}`);
+    async function handleDeleteService() {
+        await api.delete(`/service/${idService}`);
         setWindowDisplay('none');
     }
 
     return (
         <div className="modal-container" style={{ display: windowDisplay }}>
             <div className="modal-window">
-                <p>Deseja mesmo cancelar este serviço?</p>
+                <p>{user} cancelou o serviço.</p>
                 <div className="modal-buttons">
-                    <button onClick={() => setWindowDisplay('none')} className="button-cancel">Não</button>
-                    <button onClick={handleCancelService} className="button-confirm">Sim</button>
+                    <button onClick={handleDeleteService} className="button-confirm">Ok</button>
                 </div>
             </div>
         </div>

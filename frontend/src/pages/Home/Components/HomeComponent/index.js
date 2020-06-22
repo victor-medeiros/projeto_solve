@@ -7,6 +7,7 @@ import api from '../../../../service/api';
 import StartModalComponent from './StartModalComponent';
 import FinishModalComponent from './FinishModalComponent';
 import CancelModalComponent from './CancelModalComponent';
+import CanceledModalComponent from './CanceledModalComponent';
 import RateModalComponent from './RateModalComponent';
 import HireConfirmationModalComponent from './HireConfirmationModalComponent';
 import { FiStar } from 'react-icons/fi';
@@ -27,10 +28,12 @@ const HomeComponent = (props) => {
     const [startModalComponent, setStartModalComponent] = useState('none');
     const [finishModalComponent, setFinishModalComponent] = useState('none');
     const [cancelModalComponent, setCancelModalComponent] = useState('none');
+    const [canceledModalComponent, setCanceledModalComponent] = useState('none');
     const [hireModalComponent, setHireModalComponent] = useState('none');
     const [rate, setRate] = useState(0);
     const [rateModalDisplay, setRateModalDisplay] = useState('none');
     const [starsColor, setStarsColor] = useState([]);
+    const [canceledWindowDisplay, setCanceledWindowDisplay] = useState('none');
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
@@ -58,6 +61,9 @@ const HomeComponent = (props) => {
                 setServiceInProgress(true);
                 if (currentService.status === 'Concluído') {
                     setRateModalDisplay('flex');
+                }
+                if (currentService.status === 'Cancelado') {
+                    setCanceledWindowDisplay('flex');
                 }
             }
             
@@ -139,13 +145,16 @@ const HomeComponent = (props) => {
     }
 
     function handleShowModalFinish() {
-        setFinishModalComponent('flex');console.log('Finish Service')
+        setFinishModalComponent('flex');
     }
 
     function handleShowModalCancel() {
         setCancelModalComponent('flex');
     }
     
+    function handleShowModalCanceled() {
+        setCanceledModalComponent('flex');
+    }
     // function handleShowModalRate() {
     //     setRateModalComponent('flex');
     // }
@@ -193,6 +202,12 @@ const HomeComponent = (props) => {
 
     async function handleHireService() {
         setHireModalComponent('flex')
+    }
+
+    async function handleDeleteService() {
+        const { id } = service;
+        await api.delete(`/service/${id}`);
+        setCanceledWindowDisplay('none');
     }
 
     return (
@@ -282,7 +297,7 @@ const HomeComponent = (props) => {
                                 ? service.status === 'Solicitado'
                                     ? (
                                         <div style={{display: 'flex', flexDirection: 'row'}}>
-                                            <button className="button-cancel" onClick={handleCancelService}>
+                                            <button className="button-cancel" onClick={handleShowModalCancel}>
                                                 Cancelar
                                             </button>
                                             <button onClick={handleConfirmService} className="button-pick" style={{marginLeft: 10}}>
@@ -293,7 +308,7 @@ const HomeComponent = (props) => {
                                     : service.status === 'Confirmado'
                                         ? (
                                             <div style={{display: 'flex', flexDirection: 'row'}}>
-                                                <button className="button-cancel" onClick={handleCancelService}>
+                                                <button className="button-cancel" onClick={handleShowModalCancel}>
                                                     Cancelar
                                                 </button>
                                                 <button onClick={handleShowModalStart} className="button-pick" style={{marginLeft: 10}}>
@@ -304,7 +319,7 @@ const HomeComponent = (props) => {
                                         : service.status === 'Pronto para iniciar' 
                                             ? (
                                                 <div style={{display: 'flex', flexDirection: 'row'}}>
-                                                    <button className="button-cancel" onClick={handleCancelService}>
+                                                    <button className="button-cancel" onClick={handleShowModalCancel}>
                                                         Cancelar
                                                     </button>
                                                 </div>
@@ -319,10 +334,12 @@ const HomeComponent = (props) => {
                                                 )
                                                 : service.status === 'Concluído'
                                                     ? (<p>R$ {service.price}</p>)
-                                                    : (<p></p>)
+                                                    : service.status === 'Cancelado'
+                                                        ? () => handleShowModalCanceled
+                                                        : (<p></p>)
                                 : service.status === 'Solicitado'
                                     ? (
-                                        <button className="button-cancel" onClick={handleCancelService}>
+                                        <button className="button-cancel" onClick={handleShowModalCancel}>
                                             Cancelar
                                         </button>
                                     )
@@ -330,7 +347,7 @@ const HomeComponent = (props) => {
                                         ? (
                                             <div style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end'}}>
                                                 <p>R$ {service.price}</p>
-                                                <button className="button-cancel" onClick={handleCancelService} style={{marginLeft: 30}}>
+                                                <button className="button-cancel" onClick={handleShowModalCancel} style={{marginLeft: 30}}>
                                                     Cancelar
                                                 </button>
                                                 <button onClick={handleHireService} className="button-pick" style={{marginLeft: 10}}>
@@ -340,7 +357,7 @@ const HomeComponent = (props) => {
                                         )
                                         : service.status === 'Confirmado' 
                                             ? (
-                                                <button className="button-cancel" onClick={handleCancelService}>
+                                                <button className="button-cancel" onClick={handleShowModalCancel}>
                                                     Cancelar
                                                 </button>
                                             )
@@ -365,7 +382,18 @@ const HomeComponent = (props) => {
                                                         </div>
                                                     </div>
                                                 )
-                                                : (<p>R$ {service.price}</p>)
+                                                : service.status === 'Cancelado'
+                                                    ? (
+                                                        <div className="modal-container" style={{ display: canceledWindowDisplay }}>
+                                                            <div className="modal-window">
+                                                                <p>{service.user_name} cancelou o serviço.</p>
+                                                                <div className="modal-buttons">
+                                                                    <button onClick={handleDeleteService} className="button-confirm">Ok</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                    : (<p>R$ {service.price}</p>)                    
                             }
                         </div>
                     </div>
