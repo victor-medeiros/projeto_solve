@@ -1,6 +1,7 @@
 const knex = require("../database");
 const { where } = require("../database");
-const { index } = require("./UserController");
+const { index, show } = require("./UserController");
+const { response } = require("express");
 
 module.exports = {
     async create(req, res, next) {
@@ -33,7 +34,7 @@ module.exports = {
             if (client[0] !== undefined){
                 const [RowDataPacket] = await knex('user')
                     .where({id: client[0].professional_id})
-                    .select('name', 'picture');console.log(RowDataPacket)
+                    .select('name', 'picture');
                     
                 serializedUser = client.map(data => {
                     return {
@@ -67,98 +68,141 @@ module.exports = {
             next(error);
         }
     },
-    async confirm(req, res, next) {
+    async show(req, res, next){
         try {
+            const id = Number(req.params.id);
+            const { professional } = req.body;
+
+            if (professional == 1) {
+                const result = await knex('service')
+                    .where({
+                        professional_id: id,
+                        status: 'Finalizado'
+                    })
+                    .join('user', 'user.id', 'service.client_id')
+                    .orderBy('service.id', 'desc')
+                    .select('service.*', 'user.name', 'user.picture');
+
+                const services = result.map(service => {
+                    return {
+                        ...service,
+                        picture_url: `http://localhost:3333/uploads/${service.picture}`
+                    };
+                });
+
+                return res.json(services);
+            } else {
+                const result = await knex('service').where({
+                    client_id: id,
+                    status: 'Finalizado'
+                })
+                .join('user', 'user.id', 'service.professional_id')
+                .orderBy('service.id', 'desc')
+                .select('service.*', 'user.name', 'user.picture');
+
+                const services = result.map(service => {
+                    return {
+                        ...service,
+                        picture_url: `http://localhost:3333/uploads/${service.picture}`
+                    };
+                });
+
+                console.log(id);
+                console.log(professional);
+                console.log(services);
+                return res.json(services);
+            }
+
+        } catch (error) {
+            next(error);
+        }
+
+    },
+    async update(req, res, next) {
+        try {
+            const { 
+                dateTime,
+                price,
+                request,
+                solution,
+                rate,
+                status
+            } = req.body;
+
             const { id } = req.params;
 
-            await knex('service').
-                where({
-                    id,
-                    status: 'Solicitado'
-                })
-                .update({
-                    status: 'Confirmado'
-                });
+            const requestFields = [
+                {
+                    value: dateTime,
+                    name: 'dateTime'
+                },
+                {
+                    value: price,
+                    name: 'price'
+                },
+                {
+                    value: request,
+                    name: 'request'
+                },
+                {
+                    value: solution,
+                    name: 'solution'
+                },
+                {
+                    value: rate,
+                    name: 'rate'
+                },
+                {
+                    value: status,
+                    name: 'status'
+                }
+            ];
+
+            let data = {};
+
+            requestFields.map(field => {
+                if(field.value != undefined){
+                    data = {...data, [field.name]: field.value};
+                }
+            });
+
+            const serviceStatus = [
+                'Solicitado',
+                'Confirmado',
+                'Pronto para iniciar',
+                'Em andamento',
+                'Concluído',
+                'Finalizado'
+            ];
+
+            const serviceNewStatus = serviceStatus.indexOf(status) + 1;
+            data.status = serviceNewStatus === serviceStatus.length
+                ? data.status
+                : serviceStatus[serviceNewStatus];
+
+            if (status === 'Cancelado') {
+                const validColumns = [
+                    'Solicitado',
+                    'Confirmado',
+                    'Pronto para iniciar'
+                ];
+                console.log('O serviço deve ser cancelado')
+                await knex('service')
+                    .whereIn('status', validColumns)
+                    .andWhere({ id })
+                    .update({
+                        status: 'Cancelado'
+                    });
+            } else {
+                await knex('service').
+                    where({
+                        id,
+                        status
+                    })
+                    .update(data);
+            }
 
             res.send();
-        } catch (error) {
-            next(error);
-        }
-    },
-    async start(req, res, next) {
-        try {
-            const { price } = req.body;
-            const { id } = req.params;
-
-            await knex('service')
-                .where({
-                    id,
-                    status: 'Confirmado'
-                })
-                .update({
-                    price,
-                    status: 'Pronto para iniciar'
-                });
-
-            return res.send();
-        } catch (error) {
-            next(error);
-        }
-    },
-    async hire(req, res, next) {
-        try {
-            const { id } = req.params;
-
-            await knex('service')
-                .where({
-                    id,
-                    status: 'Pronto para iniciar'
-                })
-                .update({
-                    status: 'Em andamento'
-                });
-
-            return res.send();
-        } catch (error) {
-            next(error);
-        }
-    },
-    async finish(req, res, next) {
-        try {
-            const { solution } = req.body;
-            const { id } = req.params;
-            const dateTime = new Date;
-
-            await knex('service')
-                .where({
-                    id,
-                    status: 'Em andamento',
-                })
-                .update({
-                    solution,
-                    status: 'Concluído',
-                    dateTime
-                });
-
-            return res.send();
-        } catch (error) {
-            next(error);
-        }
-    },
-    async pickUpDevice(req, res, next) {
-        try {
-            const { id } = req.params;
-
-            await knex('service')
-                .where({
-                    id,
-                    status: 'Concluído'
-                })
-                .update({
-                    status: 'Finalizado'
-                });
-            
-            return res.send();
         } catch (error) {
             next(error);
         }
@@ -167,14 +211,13 @@ module.exports = {
         try {
             const { id } = req.params;
 
-            const invalidColumns = ['Solicitado', 'Confirmado'];
-
             await knex('service')
-                .whereIn('status', invalidColumns)
-                .andWhere({id})
+                .andWhere({
+                    id,
+                    status: 'Cancelado'
+                })
                 .del()
                 
-
             return res.send();
         } catch (error) {
             next(error);

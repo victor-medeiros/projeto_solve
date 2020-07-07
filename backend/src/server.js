@@ -4,6 +4,14 @@ const cors = require('cors');
 
 const app = express();
 
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
+app.use((req, res, next) => {
+    req.io = io;
+    return next();
+});
+
 app.use(cors());
 app.use(express.json());
 app.use(routes);
@@ -21,4 +29,4 @@ app.use((error, req, res, next) => {
     res.json({ error: error.message })
 });
 
-app.listen(3333, () => console.log('Servidor rodando'));
+server.listen(3333, () => console.log('Servidor rodando'));

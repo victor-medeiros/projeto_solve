@@ -1,10 +1,15 @@
 const knex = require('../database');
-const { index } = require('./ServiceController');
 
 module.exports = {
     async show(req, res, next) {
         try {
-            const result = await knex('user').where({ professional: true });
+            const result = await knex('user')
+                .where({ professional: true })
+                .join('service', 'service.professional_id', 'user.id')
+                .groupBy('user.id')
+                .count('rate', {as: 'count'})
+                .select(knex.raw('ROUND(AVG(rate),1) AS avg'))
+                .select('user.*');
 
             const users = result.map(user => {
                 return {
@@ -32,7 +37,7 @@ module.exports = {
     
             const picture = req.file.filename;
     
-            const userId = await knex('user').insert({
+            await knex('user').insert({
                 name,
                 email,
                 password,
@@ -48,7 +53,7 @@ module.exports = {
             return next(error);
         }
     },
-    async login(req, res, next){
+    async index(req, res, next){
         try {
             const { email, password } = req.body;
 
