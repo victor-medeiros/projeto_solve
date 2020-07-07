@@ -144,14 +144,6 @@ const HomeComponent = (props) => {
         setCancelModalComponent('flex');
     }
 
-    async function handleRateService(){
-        const { id } = service;
-        await api.put(`/service-rate/${id}`, {rate});
-        setRateModalDisplay('none');
-        const userId = localStorage.getItem('user_id')
-        return history.push(`/home/${userId}`);
-    }
-
     async function handleRequestService() {
         if (request === '') {
             return alert('Digite o serviço');
@@ -181,20 +173,29 @@ const HomeComponent = (props) => {
 
     async function handleCancelService() {
         setServiceInProgress(false);
-        await api.delete(`/service/${service.id}`);
+        await api.put(`/service/${service.id}`, { status: 'Cancelado' });
         const userId = localStorage.getItem('user_id')
         return history.push(`/home/${userId}`);
     }
 
     async function handleConfirmService() {
         const { id } = service;
-        await api.put(`/service-confirm/${id}`);
+        await api.put(`/service/${id}`, { status: 'Solicitado' });
         const userId = localStorage.getItem('user_id')
         return history.push(`/home/${userId}`);
     }
 
     async function handleHireService() {
         setHireModalComponent('flex')
+    }
+
+    async function handleRateService(){
+        const { id } = service;
+        console.log(rate);
+        await api.put(`/service/${id}`, {rate, status: 'Concluído'});
+        setRateModalDisplay('none');
+        const userId = localStorage.getItem('user_id')
+        return history.push(`/home/${userId}`);
     }
 
     async function handleDeleteService() {

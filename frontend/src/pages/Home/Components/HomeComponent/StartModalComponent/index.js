@@ -18,7 +18,7 @@ const StartModalComponent = ({ display, idService }) => {
             return alert('Digite um valor numérico');
         }
 
-        await api.put(`/service-start/${idService}`, {price});
+        await api.put(`/service/${idService}`, {price, status: 'Confirmado'});
         setWindowDisplay('none');
         const userId = localStorage.getItem('user_id')
         return history.push(`/home/${userId}`);

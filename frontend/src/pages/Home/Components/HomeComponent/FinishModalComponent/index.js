@@ -13,13 +13,30 @@ const FinishModalComponent = ({display, idService}) => {
     }, [display]);
 
     async function handleFinishService() {
-        const dateTime = new Date;
+        const dateTime = getDBFormat(new Date);
 
-        const data = { solution, dateTime }
-        await api.put(`/service-finish/${idService}`, data);
+        const data = { solution, dateTime, status: 'Em andamento' }
+        await api.put(`/service/${idService}`, data);
         setWindowDisplay('none');
         const userId = localStorage.getItem('user_id')
         return history.push(`/home/${userId}`);
+    }
+
+    function getDBFormat(date) {
+        let formatedDate = '';
+        formatedDate = date.getFullYear();
+        formatedDate += '-';
+        formatedDate += date.getMonth() + 1;
+        formatedDate += '-';
+        formatedDate += date.getDate();
+        formatedDate += ' ';
+        formatedDate += date.getHours();
+        formatedDate += ':';
+        formatedDate += date.getMinutes();
+        formatedDate += ':';
+        formatedDate += date.getSeconds();
+
+        return formatedDate;
     }
 
     return (

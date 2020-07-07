@@ -16,7 +16,7 @@ routes.put('/user/:id', upload.single('picture'), UserController.update);
 routes.post('/service', ServiceController.create);
 routes.get('/service', ServiceController.index);
 routes.post('/services/:id', ServiceController.show);
-routes.put('/service-confirm/:id', ServiceController.update);
+routes.put('/service/:id', ServiceController.update);
 routes.delete('/service/:id', ServiceController.delete);
 
 module.exports = routes;

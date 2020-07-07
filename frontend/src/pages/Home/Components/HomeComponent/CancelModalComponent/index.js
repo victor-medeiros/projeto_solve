@@ -12,7 +12,7 @@ const CancelModalComponent = ({ user, display, idService }) => {
     }, [display]);
 
     async function handleCancelService() {
-        await api.put(`/service-cancel/${idService}`);
+        await api.put(`/service/${idService}`, { status: 'Cancelado' });
         setWindowDisplay('none');
         const userId = localStorage.getItem('user_id')
         return history.push(`/home/${userId}`);

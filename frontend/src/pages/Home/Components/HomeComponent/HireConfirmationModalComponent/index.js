@@ -10,7 +10,7 @@ const HireConfirmationModalComponent = ({ display, idService }) => {
     }, [display]);
 
     async function handleHireService() {
-        await api.put(`/service-hire/${idService}`);
+        await api.put(`/service/${idService}`, { status: 'Pronto para iniciar' });
         setWindowDisplay('none')
     }
 
